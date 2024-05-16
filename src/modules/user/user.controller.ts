@@ -3,16 +3,16 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
 
-@Controller('users')
+@Controller('')
 export class UserController {
   constructor(private readonly userService: UserService) { }
-
-  @Post()
+  // Create
+  @Post('users')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
-
-  @Get()
+  // Read
+  @Get('users')
   findAll(
     @Request() req,
   ) {
@@ -21,9 +21,12 @@ export class UserController {
       page: req.query.page ? req.query.page : 0,
     });
   }
-
-  @Get(':id')
+  @Get('users/:id')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
+  }
+  @Get('positions')
+  findAllPositions() {
+    return this.userService.findAllUserPositions()
   }
 }

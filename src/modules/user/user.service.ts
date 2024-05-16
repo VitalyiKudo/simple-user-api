@@ -18,7 +18,7 @@ export class UserService {
     private readonly positionRepository: Repository<Position>,
     private readonly config: ConfigService,
   ) { }
-
+  // Create
   async create(dto: CreateUserDto) {
     const { positionId } = dto
 
@@ -41,7 +41,7 @@ export class UserService {
       message: "New user successfully registered",
     }
   }
-
+  // Read
   async findAll(pagination?: { count: number; page: number }) {
     const { count, page } = pagination
     const users = await this.userRepository.find()
@@ -67,7 +67,6 @@ export class UserService {
       users: paginate(users, count, page)
     }
   }
-
   async findOne(id: number) {
     const user = await this.userRepository.findOneBy({ id: !isNaN(Number(id)) ? id : 0 })
 
@@ -76,6 +75,20 @@ export class UserService {
     return {
       success: true,
       user,
+    }
+  }
+  async findAllUserPositions() {
+    const positions = await this.positionRepository.find()
+
+    if (!positions)
+      throw new HttpException({
+        success: false,
+        message: 'Positions not found'
+      }, 404)
+
+    return {
+      success: true,
+      positions
     }
   }
 }
