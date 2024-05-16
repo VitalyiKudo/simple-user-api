@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { Position } from 'src/entities/position.entity';
 import { validateCreationErrors, validateFindAllErrors, validateFindOneErrors } from './errorHandler';
 import { paginate } from 'src/utils';
@@ -19,18 +19,25 @@ export class UserService {
     private readonly config: ConfigService,
   ) { }
   // Create
-  async create(dto: CreateUserDto) {
+  async create(dto: CreateUserDto, photo: string) {
     const { positionId } = dto
 
     const position = await this.positionRepository.findOneBy(
-      { id: positionId }
+      { id: Number(positionId) }
     )
+    const serverUrl = this.config.get('SERVER_URL')
+    const readPhotoLink = `${serverUrl}/avatars/${photo}`
 
-    // await validate(dto, position)
+    const options: FindOneOptions<User> = {
+      where: [{ email: dto.email }, { phone: dto.phone }],
+    };
+    const existingUser = await this.userRepository.findOne(options)
+    await validateCreationErrors(dto, position, photo, existingUser)
 
     const newUser = await this.userRepository.create({
       ...dto,
       position,
+      photo: readPhotoLink,
       positionName: position.name,
     })
     const user = await this.userRepository.save(newUser)

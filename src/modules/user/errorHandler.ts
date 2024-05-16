@@ -2,18 +2,18 @@ import { Position, User } from "src/entities";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserCreationValidationFails, UserReadAllValidationFails, ValidationFailsObject } from "src/types";
 import { FindOneOptions } from "typeorm";
-import { isValidEmail, isValidPhone } from "src/utils";
+import { deleteFile, isValidEmail, isValidPhone } from "src/utils";
 import { HttpException } from "@nestjs/common";
 
-export async function validateCreationErrors(dto: CreateUserDto, position: Position) {
+export async function validateCreationErrors(
+    dto: CreateUserDto,
+    position: Position,
+    photo: string,
+    existingUser: User
+) {
     let code = 201
     let message = ''
     let fails: UserCreationValidationFails = {}
-
-    const options: FindOneOptions<User> = {
-        where: [{ email: dto.email }, { phone: dto.phone }],
-    };
-    const existingUser = await this.userRepository.findOne(options)
 
     if (!position) {
         code = 404
@@ -35,13 +35,13 @@ export async function validateCreationErrors(dto: CreateUserDto, position: Posit
         code = 403
         fails.phone = ['The phone must be a valid phone number and starts with +380']
     }
-    if (typeof dto.positionId !== 'number') {
-        code = 403
-        fails.position_id = ['The position id must be an integer']
-    }
     if (!dto.phone) {
         code = 403
         fails.phone = ['The phone field is required']
+    }
+    if (!photo) {
+        code = 403
+        fails.photo = ['The photo field is required']
     }
 
     const errorObj: ValidationFailsObject = {
@@ -52,8 +52,10 @@ export async function validateCreationErrors(dto: CreateUserDto, position: Posit
         errorObj.message = 'Validation failed'
         errorObj.fails = fails
     }
-    if (code !== 201)
+    if (code !== 201) {
+        deleteFile(photo) // Delete a file with a user avatar
         throw new HttpException(errorObj, code)
+    }
 }
 
 export async function validateFindAllErrors(page: number, count: number, totalPages: number) {
