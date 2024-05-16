@@ -1,6 +1,6 @@
 import { Position, User } from "src/entities";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { UserCreationValidationFails, UsersReadingValidationFails, ValidationFailsObject } from "src/types";
+import { UserCreationValidationFails, UserReadAllValidationFails, ValidationFailsObject } from "src/types";
 import { FindOneOptions } from "typeorm";
 import { isValidEmail, isValidPhone } from "src/utils";
 import { HttpException } from "@nestjs/common";
@@ -56,10 +56,10 @@ export async function validateCreationErrors(dto: CreateUserDto, position: Posit
         throw new HttpException(errorObj, code)
 }
 
-export async function validateReadingErrors(page: number, count: number, totalPages: number) {
+export async function validateFindAllErrors(page: number, count: number, totalPages: number) {
     let code = 200
     let message = "Validation failed"
-    let fails: UsersReadingValidationFails = {}
+    let fails: UserReadAllValidationFails = {}
 
     if (page < 1) {
         code = 422
@@ -73,6 +73,7 @@ export async function validateReadingErrors(page: number, count: number, totalPa
         code = 404
         message = 'Page not found'
     }
+
     const errorObj: ValidationFailsObject = {
         success: false,
         message,
@@ -81,6 +82,28 @@ export async function validateReadingErrors(page: number, count: number, totalPa
         errorObj.message = 'Validation failed'
         errorObj.fails = fails
     }
+
+    if (code !== 200)
+        throw new HttpException(errorObj, code)
+}
+
+export async function validateFindOneErrors(id: number, user: User) {
+    let code = 200
+    let message = "User not found"
+
+    if (!user)
+        code = 404
+    if (isNaN(Number(id))) {
+        code = 400
+        message = 'The user with the requestedid does not exist'
+    }
+
+    const errorObj: ValidationFailsObject = {
+        success: false,
+        message,
+    }
+    if (code === 400)
+        errorObj.fails = { userId: ['The user must be an integer'] }
 
     if (code !== 200)
         throw new HttpException(errorObj, code)

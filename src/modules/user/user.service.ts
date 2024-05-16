@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities';
 import { Repository } from 'typeorm';
 import { Position } from 'src/entities/position.entity';
-import { validateCreationErrors, validateReadingErrors } from './errorHandler';
+import { validateCreationErrors, validateFindAllErrors, validateFindOneErrors } from './errorHandler';
 import { paginate } from 'src/utils';
 import { ConfigService } from '@nestjs/config';
 import { PaginationLinks } from 'src/types';
@@ -55,7 +55,7 @@ export class UserService {
     if (page > 1)
       links.prev_url = `${serverUrl}/users?page=${Number(page) - 1}&count=${count}`
 
-    await validateReadingErrors(page, count, totalPages)
+    await validateFindAllErrors(page, count, totalPages)
 
     return {
       success: true,
@@ -68,7 +68,14 @@ export class UserService {
     }
   }
 
-  findOne(id: number) {
-    return this.userRepository.findOneBy({ id })
+  async findOne(id: number) {
+    const user = await this.userRepository.findOneBy({ id: !isNaN(Number(id)) ? id : 0 })
+
+    await validateFindOneErrors(id, user)
+
+    return {
+      success: true,
+      user,
+    }
   }
 }

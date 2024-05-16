@@ -1,7 +1,7 @@
 export type ValidationFailsObject = {
     success: boolean,
     message: string
-    fails?: UserCreationValidationFails | UsersReadingValidationFails
+    fails?: UserCreationValidationFails | UserReadAllValidationFails | UserReadOneValidationFails
 }
 export type UserCreationValidationFails = {
     name?: string[]
@@ -10,9 +10,12 @@ export type UserCreationValidationFails = {
     position_id?: string[]
     photo?: string[]
 }
-export type UsersReadingValidationFails = {
+export type UserReadAllValidationFails = {
     count?: string[]
     page?: string[]
+}
+export type UserReadOneValidationFails = {
+    userId: string[]
 }
 export type PaginationLinks = {
     next_url: string,
