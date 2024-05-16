@@ -1,11 +1,11 @@
 import { Position, User } from "src/entities";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { UserCreationValidationFails, ValidationFailsObject } from "src/types";
+import { UserCreationValidationFails, UsersReadingValidationFails, ValidationFailsObject } from "src/types";
 import { FindOneOptions } from "typeorm";
 import { isValidEmail, isValidPhone } from "src/utils";
 import { HttpException } from "@nestjs/common";
 
-export async function validate(dto: CreateUserDto, position: Position) {
+export async function validateCreationErrors(dto: CreateUserDto, position: Position) {
     let code = 201
     let message = ''
     let fails: UserCreationValidationFails = {}
@@ -16,8 +16,8 @@ export async function validate(dto: CreateUserDto, position: Position) {
     const existingUser = await this.userRepository.findOne(options)
 
     if (!position) {
-        message = "Position not found"
         code = 404
+        message = "Position not found"
     }
     if (existingUser) {
         code = 403
@@ -53,5 +53,35 @@ export async function validate(dto: CreateUserDto, position: Position) {
         errorObj.fails = fails
     }
     if (code !== 201)
+        throw new HttpException(errorObj, code)
+}
+
+export async function validateReadingErrors(page: number, count: number, totalPages: number) {
+    let code = 200
+    let message = "Validation failed"
+    let fails: UsersReadingValidationFails = {}
+
+    if (page < 1) {
+        code = 422
+        fails.page = ['The page must be at least 1']
+    }
+    if (isNaN(Number(count))) {
+        code = 422
+        fails.count = ['The count must be an integer']
+    }
+    if (page > totalPages) {
+        code = 404
+        message = 'Page not found'
+    }
+    const errorObj: ValidationFailsObject = {
+        success: false,
+        message,
+    }
+    if (Object.keys(fails).length) {
+        errorObj.message = 'Validation failed'
+        errorObj.fails = fails
+    }
+
+    if (code !== 200)
         throw new HttpException(errorObj, code)
 }
