@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Module } from '@nestjs/common';
+import entities from './entities';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { Module } from '@nestjs/common';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
         synchronize: true,
+        entities,
         autoLoadEntities: true,
         keepConnectionAlive: true,
         dropSchema: false,
