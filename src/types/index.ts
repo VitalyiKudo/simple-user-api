@@ -1,5 +1,12 @@
-export type UserRegistrationResponce = {
+export type ValidationFailsObject = {
     success: boolean,
     message: string
-    user_id?: number
+    fails?: UserCreationValidationFails
+}
+export type UserCreationValidationFails = {
+    name?: string[]
+    email?: string[]
+    phone?: string[]
+    position_id?: string[]
+    photo?: string[]
 }
