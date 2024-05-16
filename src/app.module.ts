@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Module } from '@nestjs/common';
 import entities from './entities';
+import { UserModule } from './modules';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import entities from './entities';
       }),
       inject: [ConfigService],
     }),
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
