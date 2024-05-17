@@ -3,8 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Module } from '@nestjs/common';
-import entities from './entities';
+import entities, { Position, User } from './entities';
 import { UserModule } from './modules';
+import { ImageSeedService } from './image-seed.service';
+import { BootsTrapService } from './bootstrap.service';
 
 @Module({
   imports: [
@@ -28,8 +30,13 @@ import { UserModule } from './modules';
       inject: [ConfigService],
     }),
     UserModule,
+    TypeOrmModule.forFeature([User, Position])
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    ImageSeedService,
+    BootsTrapService,
+  ],
 })
 export class AppModule { }
