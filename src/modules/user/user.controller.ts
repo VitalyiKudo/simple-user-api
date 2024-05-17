@@ -6,7 +6,7 @@ import { createDiskStorage } from 'src/utils';
 import { uploadPath } from 'src/utils/constants';
 import { JwtManager } from './jwt.service';
 import { AuthenticationGuard } from 'src/common/guards';
-import { CompressService } from './compress-image.service';
+import { TinityService } from './titify-image.service';
 
 const avatarStorage = createDiskStorage(uploadPath)
 

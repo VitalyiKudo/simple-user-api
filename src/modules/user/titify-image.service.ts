@@ -4,18 +4,23 @@ import { uploadPath } from "src/utils/constants";
 import tinify from 'tinify';
 
 @Injectable()
-export class CompressService {
+export class TinityService {
     constructor(
         private readonly confing: ConfigService
     ) { }
 
-    async compressImage(fileName: string) {
+    async compressAndResizeImage(fileName: string) {
         tinify.key = this.confing.get('TINIFY_API_KEY')
 
         const filePath = uploadPath + '/' + fileName
         const source = tinify.fromFile(filePath)
+        const resized = source.resize({
+            method: "fit",
+            width: 70,
+            height: 70
+        })
         try {
-            source.toFile(filePath)
+            resized.toFile(filePath)
         } catch (error) {
             console.log(error);
         }

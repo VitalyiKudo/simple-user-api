@@ -2,7 +2,7 @@ import { Position, User } from "src/entities";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserCreationValidationFails, UserReadAllValidationFails, ValidationFailsObject } from "src/types";
 import { FindOneOptions } from "typeorm";
-import { deleteFile, isValidEmail, isValidPhone, validateImageDimensions } from "src/utils";
+import { deleteFile, isValidEmail, isValidPhone } from "src/utils";
 import { HttpException } from "@nestjs/common";
 
 export async function validateCreationErrors(
@@ -14,7 +14,6 @@ export async function validateCreationErrors(
     let code = 201
     let message = ''
     let fails: UserCreationValidationFails = {}
-    const isValidDimensions = await validateImageDimensions(photo)
 
     if (!position) {
         code = 404
@@ -38,9 +37,6 @@ export async function validateCreationErrors(
     }
     if (!photo) {
         fails.photo = ['The photo field is required']
-    }
-    if (!isValidDimensions) {
-        fails.photo = ['The image resolution must be at least 70x70 pixels']
     }
 
     const errorObj: ValidationFailsObject = {

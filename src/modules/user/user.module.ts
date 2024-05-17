@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Position, User } from 'src/entities';
 import { JwtManager } from './jwt.service';
 import { AuthenticationStrategy } from 'src/common/strategies';
-import { CompressService } from './compress-image.service';
+import { TinityService } from './titify-image.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, Position])],
@@ -14,7 +14,7 @@ import { CompressService } from './compress-image.service';
   providers: [
     UserService,
     JwtService,
-    CompressService,
+    TinityService,
     JwtManager,
     AuthenticationStrategy
   ],

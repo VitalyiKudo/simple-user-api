@@ -40,13 +40,3 @@ export function deleteFile(fileName: string) {
         }
     });
 }
-export async function validateImageDimensions(fileName: string) {
-    try {
-        const dimensions = sizeOf(uploadPath + '/' + fileName);
-        const { width, height } = dimensions;
-
-        return width > 70 && height > 70
-    } catch (error) {
-        throw new HttpException('Invalid image file', 400);
-    }
-}
