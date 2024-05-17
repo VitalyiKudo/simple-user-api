@@ -2,6 +2,8 @@ import { diskStorage } from "multer";
 import { v4 as uuidv4 } from 'uuid';
 import path = require('path');
 import { uploadPath } from "./constants";
+import { HttpException } from "@nestjs/common";
+import sizeOf from 'image-size';
 const fs = require('fs');
 
 export function isValidEmail(email: string) {
@@ -31,6 +33,16 @@ export function createDiskStorage(destination: string) {
                 cb(null, `${filename}${extension}`);
             },
         }),
+        limits: {
+            fileSize: 5 * 1024 * 1024,
+        },
+        fileFilter: async (req, file, cb) => {
+            if (file.mimetype.match(/\/(jpg|jpeg)$/)) {
+                cb(null, true);
+            } else {
+                cb(new HttpException('Only JPG and JPEG files are allowed', 400));
+            }
+        },
     }
 }
 export function deleteFile(fileName: string) {
@@ -42,4 +54,14 @@ export function deleteFile(fileName: string) {
             });
         }
     });
+}
+export async function validateImageDimensions(fileName: string) {
+    try {
+        const dimensions = sizeOf(uploadPath + '/' + fileName);
+        const { width, height } = dimensions;
+
+        return width > 70 && height > 70
+    } catch (error) {
+        throw new HttpException('Invalid image file', 400);
+    }
 }
