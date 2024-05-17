@@ -1,17 +1,23 @@
-import { Controller, Get, Post, Body, Param, Request, UseInterceptors, UploadedFile, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Request, UseInterceptors, UploadedFile, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { createDiskStorage } from 'src/utils';
 import { uploadPath } from 'src/utils/constants';
+import { JwtManager } from './jwt.service';
+import { AuthenticationGuard } from 'src/common/guards';
 
 const avatarStorage = createDiskStorage(uploadPath)
 
-@Controller('')
+@Controller()
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtManager: JwtManager,
+  ) { }
   // Create
   @Post('users')
+  @UseGuards(AuthenticationGuard)
   @UseInterceptors(FileInterceptor('photo', avatarStorage))
   create(
     @Body() dto: CreateUserDto,
@@ -40,5 +46,9 @@ export class UserController {
   @Get('avatars/:filename')
   getAttachments(@Param('filename') imagename, @Res() res) {
     return res.sendFile(`${process.cwd()}/uploads/avatars/${imagename}`);
+  }
+  @Get('/token')
+  createAuthToken() {
+    return this.jwtManager.createAuthToken()
   }
 }
