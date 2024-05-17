@@ -21,7 +21,7 @@ export class BootsTrapService implements OnApplicationBootstrap {
 
     async onApplicationBootstrap(): Promise<any> {
         const seedExist = (await this.userRepository.find()).length
-        if (seedExist > 45) return null
+        if (seedExist >= 45) return null
 
         const serverUrl = this.config.get('SERVER_URL')
 
