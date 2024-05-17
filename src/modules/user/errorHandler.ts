@@ -21,31 +21,25 @@ export async function validateCreationErrors(
         message = "Position not found"
     }
     if (existingUser) {
-        code = 403
+        code = 409
         message = "User with this phone or email already exist"
     }
     if (dto.name.length < 2 || dto.name.length > 60) {
-        code = 403
         fails.name = ['Username should contain 2-60 characters']
     }
     if (!isValidEmail(dto.email)) {
-        code = 403
         fails.email = ['The email must be a valid email address']
     }
     if (!isValidPhone(dto.phone)) {
-        code = 403
         fails.phone = ['The phone must be a valid phone number and starts with +380']
     }
     if (!dto.phone) {
-        code = 403
         fails.phone = ['The phone field is required']
     }
     if (!photo) {
-        code = 403
         fails.photo = ['The photo field is required']
     }
     if (!isValidDimensions) {
-        code = 400
         fails.photo = ['The image resolution must be at least 70x70 pixels']
     }
 
@@ -54,6 +48,7 @@ export async function validateCreationErrors(
         message,
     }
     if (Object.keys(fails).length) {
+        code = 422
         errorObj.message = 'Validation failed'
         errorObj.fails = fails
     }

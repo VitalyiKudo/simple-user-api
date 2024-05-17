@@ -1,67 +1,8 @@
-import { diskStorage } from "multer";
-import { v4 as uuidv4 } from 'uuid';
-import path = require('path');
-import { uploadPath } from "./constants";
-import { HttpException } from "@nestjs/common";
-import sizeOf from 'image-size';
-const fs = require('fs');
-
-export function isValidEmail(email: string) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-export function isValidPhone(phone: string) {
-    const phoneRegex = /^\+380\d{9}$/;
-    return phoneRegex.test(phone);
-}
+export * from './fileManagement';
+export * from './validation';
 
 export function paginate(array: Array<any>, count: number, page: number) {
     const pageLocal = Number(page) === 0 ? 1 : page;
 
     return array.slice((pageLocal - 1) * count, pageLocal * count);
-}
-
-export function createDiskStorage(destination: string) {
-    return {
-        storage: diskStorage({
-            destination,
-            filename: (req, file, cb) => {
-                const filename: string =
-                    path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
-                const extension: string = path.parse(file.originalname).ext;
-
-                cb(null, `${filename}${extension}`);
-            },
-        }),
-        limits: {
-            fileSize: 5 * 1024 * 1024,
-        },
-        fileFilter: async (req, file, cb) => {
-            if (file.mimetype.match(/\/(jpg|jpeg)$/)) {
-                cb(null, true);
-            } else {
-                cb(new HttpException('Only JPG and JPEG files are allowed', 400));
-            }
-        },
-    }
-}
-export function deleteFile(fileName: string) {
-    return fs.unlink(uploadPath + '/' + fileName, (err) => {
-        if (err) {
-            console.log({
-                error: 'File deletion error',
-                message: err
-            });
-        }
-    });
-}
-export async function validateImageDimensions(fileName: string) {
-    try {
-        const dimensions = sizeOf(uploadPath + '/' + fileName);
-        const { width, height } = dimensions;
-
-        return width > 70 && height > 70
-    } catch (error) {
-        throw new HttpException('Invalid image file', 400);
-    }
 }
