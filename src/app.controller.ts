@@ -13,9 +13,4 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-
-  // @Post('/test')
-  // async random() {
-  //   await this.seed.fetchRandomImage()
-  // }
 }

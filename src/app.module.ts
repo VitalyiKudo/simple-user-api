@@ -13,14 +13,13 @@ import { BootsTrapService } from './bootstrap.service';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (config: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('DB_HOST'),
-        port: +configService.get<number>('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_NAME'),
+        url: config.get("DB_URL"),
         synchronize: true,
+        ssl: {
+          rejectUnauthorized: false,
+        },
         entities,
         autoLoadEntities: true,
         keepConnectionAlive: true,
