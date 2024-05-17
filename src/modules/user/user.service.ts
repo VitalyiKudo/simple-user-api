@@ -8,6 +8,7 @@ import { validateCreationErrors, validateFindAllErrors, validateFindOneErrors } 
 import { paginate } from 'src/utils';
 import { ConfigService } from '@nestjs/config';
 import { PaginationLinks } from 'src/types';
+import { CompressService } from './compress-image.service';
 
 @Injectable()
 export class UserService {
@@ -17,6 +18,7 @@ export class UserService {
     @InjectRepository(Position)
     private readonly positionRepository: Repository<Position>,
     private readonly config: ConfigService,
+    private readonly compressService: CompressService,
   ) { }
   // Create
   async create(dto: CreateUserDto, photo: string) {
@@ -33,6 +35,8 @@ export class UserService {
     };
     const existingUser = await this.userRepository.findOne(options)
     await validateCreationErrors(dto, position, photo, existingUser)
+
+    await this.compressService.compressImage(photo)
 
     const newUser = await this.userRepository.create({
       ...dto,

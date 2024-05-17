@@ -6,6 +6,7 @@ import { createDiskStorage } from 'src/utils';
 import { uploadPath } from 'src/utils/constants';
 import { JwtManager } from './jwt.service';
 import { AuthenticationGuard } from 'src/common/guards';
+import { CompressService } from './compress-image.service';
 
 const avatarStorage = createDiskStorage(uploadPath)
 
@@ -19,7 +20,7 @@ export class UserController {
   @Post('users')
   @UseGuards(AuthenticationGuard)
   @UseInterceptors(FileInterceptor('photo', avatarStorage))
-  create(
+  async create(
     @Body() dto: CreateUserDto,
     @UploadedFile() photo: Express.Multer.File
   ) {
