@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Position } from './position.entity';
 
 @Entity()
@@ -39,6 +39,9 @@ export class User {
         name: 'position_id'
     })
     positionId: number
+
+    @CreateDateColumn()
+    created_at: Date;
 
     @ManyToOne(() => Position, position => position.users, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'positionId' })

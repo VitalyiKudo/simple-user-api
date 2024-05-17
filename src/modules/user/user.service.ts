@@ -55,7 +55,11 @@ export class UserService {
   // Read
   async findAll(pagination?: { count: number; page: number }) {
     const { count, page } = pagination
-    const users = await this.userRepository.find()
+    const users = await this.userRepository.find({
+      order: {
+        created_at: 'DESC'
+      }
+    })
     const serverUrl = this.config.get('SERVER_URL')
     const totalPages = Math.ceil(users.length / count)
 

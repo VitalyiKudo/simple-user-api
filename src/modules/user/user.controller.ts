@@ -32,8 +32,8 @@ export class UserController {
     @Request() req,
   ) {
     return this.userService.findAll({
-      count: req.query.count ? req.query.count : 5,
-      page: req.query.page ? req.query.page : 0,
+      count: req.query.count ? req.query.count : 6,
+      page: req.query.page ? req.query.page : 1,
     });
   }
   @Get('users/:id')
