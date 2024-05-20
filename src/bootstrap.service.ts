@@ -39,7 +39,7 @@ export class BootsTrapService implements OnApplicationBootstrap {
         // User seed
         for (let index = 0; index < 45; index++) {
             const photoSeed = await this.imageSeed.fetchRandomImage()
-            const readPhotoLink = `${serverUrl}/uploads/avatars/${photoSeed}.jpeg`
+            const readPhotoLink = `${serverUrl}/avatars/${photoSeed}.jpeg`
             const randomName: string = getRandomElement(userNames)
             const randomPosition: Position = getRandomElement(positions)
             const uniquePhone = await this.createUniquePhone()
